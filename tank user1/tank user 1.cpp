@@ -114,7 +114,7 @@ void tank_c::print() {
 		}
 		cout << endl;
 	}
-	cout << "\n--------------------\n" << endl;
+	cout << "\n---------------------\n" << endl;
 	for (int i = 0; i < 2; i++) {
 		for (int j = 0; j < 10; j++) {
 			if (i == 0) {
