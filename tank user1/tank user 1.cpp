@@ -7,7 +7,7 @@
 #define DOWN 80
 #define LEFT 75
 #define RIGHT 77
-#define STOP 115
+#define STOP 115 
 #define SPACE 32
 
 using namespace std;
@@ -46,6 +46,7 @@ tank_p::tank_p() {
 class tank_c : public tank_p {
 private:
 	int key = 0;
+	int tmp = 0;
 public:
 	void move(void);
 	void print();
@@ -53,75 +54,51 @@ public:
 };
 
 void tank_c::move(void) {
-	switch (key) {
-	case UP: {
-		while (1) {
-			if (ty != 0 && map[ty-1][tx]!=1) {
-				map[ty-1][tx] = 4;
-				map[ty][tx] = 0;
-				ty--;
+	while (1) {
+		if (kbhit()) {
+			tmp = _getch();
+			if(tmp == 224) tmp = _getch();
+			if (tmp == UP || tmp == DOWN || tmp == RIGHT || tmp == LEFT || tmp == STOP) {
+				key = tmp;
 			}
-			if (kbhit()) {
-				key = _getch();
-				if (key == STOP) {
-					break;
-				}
-			}
-			print();
 		}
-		break;
-	}
-	case DOWN: {
-		while (1) {
-			if (ty != 9 && map[ty + 1][tx] != 1) {
-				map[ty + 1][tx] = 5;
-				map[ty][tx] = 0;
-				ty++;
+		if (key == STOP) break;
+		switch (key) {
+		case UP: {
+				if (ty != 0 && map[ty - 1][tx] != 1) {
+					map[ty - 1][tx] = 4;
+					map[ty][tx] = 0;
+					ty--;
 			}
-			if (kbhit()) {
-				key = _getch();
-				if (key == STOP) {
-					break;
-				}
-			}
-			print();
+			break;
 		}
-		break;
-	}
-	case RIGHT: {
-		while (1) {
-			if (tx != 9 && map[ty ][tx+1] != 1) {
-				map[ty][tx+1] = 2;
-				map[ty][tx] = 0;
-				tx++;
-			}
-			if (kbhit()) {
-				key = _getch();
-				if (key == STOP) {
-					break;
+		case DOWN: {
+				if (ty != 9 && map[ty + 1][tx] != 1) {
+					map[ty + 1][tx] = 5;
+					map[ty][tx] = 0;
+					ty++;
 				}
-			}
-			print();
+			break;
 		}
-		break;
-	}
-	case LEFT: {
-		while (1) {
-			if (tx  != 0 && map[ty][tx-1] != 1) {
-				map[ty ][tx-1] = 3;
-				map[ty][tx] = 0;
-				tx--;
-			}
-			if (kbhit()) {
-				key = _getch();
-				if (key == STOP) {
-					break;
+		case RIGHT: {
+				if (tx != 9 && map[ty][tx + 1] != 1) {
+					map[ty][tx + 1] = 2;
+					map[ty][tx] = 0;
+					tx++;
 				}
-			}
-			print();
+			break;
 		}
-		break;
-	}
+		case LEFT: {
+				if (tx != 0 && map[ty][tx - 1] != 1) {
+					map[ty][tx - 1] = 3;
+					map[ty][tx] = 0;
+					tx--;
+				}
+			break;
+		}
+		}
+			print();
+			Sleep(500);
 	}
 }
 void tank_c::print() {
@@ -137,7 +114,7 @@ void tank_c::print() {
 		}
 		cout << endl;
 	}
-	cout <<"\n--------------------\n" << endl;
+	cout << "\n--------------------\n" << endl;
 	for (int i = 0; i < 2; i++) {
 		for (int j = 0; j < 10; j++) {
 			if (i == 0) {
@@ -152,12 +129,11 @@ void tank_c::print() {
 		}
 		cout << endl;
 	}
-	Sleep(500);
+
 }
 void tank_c::set() {
+	print();
 	while (1) {
-		print();
-		key = _getch();
 		move();
 	}
 }
