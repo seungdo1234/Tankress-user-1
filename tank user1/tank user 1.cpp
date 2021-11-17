@@ -60,6 +60,7 @@ private:
 	SOCKET clientSocket;
 	int key = 0;
 	int tmp = 0;
+	int index[3] = { 0, };
 public:
 	void Cli_St();
 	void move(void);
@@ -97,7 +98,15 @@ void tank_c::Cli_St() {
 	cout <<a<< endl;
 	*/
 	cout << "서버에 접속 했습니다 " << endl;
-	Sleep(3000);
+	recv(clientSocket, (char*)index, sizeof(index),0);
+	for (int i = 0; i < 3; i++) {
+		index[i] = ntohl(index[i]);
+	}
+	for (int i = 0; i < 3; i++) {
+		cout << index[i] << endl;
+	}
+	cout << "탱크리스를 시작하겠습니다. " << endl;
+
 }
 
 void tank_c::con() {
@@ -160,34 +169,36 @@ void tank_c::move(void) {
 	}
 
 void tank_c::print() {
-	system("cls");
-	for (int i = 0; i < 10; i++) {
-		for (int j = 0; j < 10; j++) {
-			if (map[i][j] == 0) cout << "□";
-			if (map[i][j] == 1) cout << "■";
-			if (map[i][j] == 2) cout << "▶";
-			if (map[i][j] == 3) cout << "◀";
-			if (map[i][j] == 4) cout << "▲";
-			if (map[i][j] == 5) cout << "▼";
-		}
-		cout << endl;
-	}
-	cout << "\n--------------------\n" << endl;
-	for (int i = 0; i < 2; i++) {
-		for (int j = 0; j < 10; j++) {
-			if (i == 0) {
-				if (map[coordinate[0]][j] == 0) cout << "  ";
-				if (map[coordinate[0]][j] == 1) cout << "■";
-				if (map[coordinate[0]][j] == 2) cout << "▶";
-				if (map[coordinate[0]][j] == 3) cout << "◀";
-				if (map[coordinate[0]][j] == 4) cout << "▲";
-				if (map[coordinate[0]][j] == 5) cout << "▼";
+	if (index[1] == 1) {
+		system("cls");
+		for (int i = 0; i < 10; i++) {
+			for (int j = 0; j < 10; j++) {
+				if (map[i][j] == 0) cout << "□";
+				if (map[i][j] == 1) cout << "■";
+				if (map[i][j] == 2) cout << "▶";
+				if (map[i][j] == 3) cout << "◀";
+				if (map[i][j] == 4) cout << "▲";
+				if (map[i][j] == 5) cout << "▼";
 			}
-			if (i == 1) cout << "□";
+			cout << endl;
 		}
-		cout << endl;
+		cout << "\n--------------------\n" << endl;
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < 10; j++) {
+				if (i == 0) {
+					if (map[coordinate[0]][j] == 0) cout << "  ";
+					if (map[coordinate[0]][j] == 1) cout << "■";
+					if (map[coordinate[0]][j] == 2) cout << "▶";
+					if (map[coordinate[0]][j] == 3) cout << "◀";
+					if (map[coordinate[0]][j] == 4) cout << "▲";
+					if (map[coordinate[0]][j] == 5) cout << "▼";
+				}
+				if (i == 1) cout << "□";
+			}
+			cout << endl;
+		}
+		Sleep(index[2]);
 	}
-	Sleep(500);
 }
 void tank_c::set() {
 	Cli_St();
