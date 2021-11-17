@@ -27,10 +27,13 @@ class tank_p {
 public:
 	int map[10][10] = { 0, };
 	int coordinate[3] = { 8,0,2 };
+	int coordinate2[3] = { 0, };
+	int coordinate3[3]={ 0, };
 	virtual void move(void) = 0;
 	tank_p();
 };
 tank_p::tank_p() {
+	map[6][9] = 3;
 	map[8][0] = 2;
 	map[1][3] = 1;
 	map[1][4] = 1;
@@ -58,7 +61,7 @@ private:
 	WSADATA wsdata;
 	SOCKADDR_IN serverAddress;
 	SOCKET clientSocket;
-	int key = 0;
+	int key = STOP;
 	int tmp = 0;
 	int index[3] = { 0, };
 public:
@@ -70,13 +73,12 @@ public:
 };
 
 void tank_c::Cli_St() {
-	int d;
+
 	/*WS_32.DLL 을 초기화 */
 	if (WSAStartup(MAKEWORD(2, 2), &wsdata) != 0) {
 		cout << "WS2_32.DLL 을 초기화 하는데 실패했습니다. " << endl;
 		return;
 	}
-	cout << "WS_32.DLL 을 초기화 하는데 성공 했습니다 " << endl;
 	/*socket 함수를 이용해서 clientSocket을 생성 */
 	clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 	ZeroMemory(&serverAddress, sizeof(serverAddress));
@@ -89,34 +91,32 @@ void tank_c::Cli_St() {
 	{
 		perror("Could not open data file");
 		//cout << "서버에 접속하는데 실패 했습니다 " << endl;
-		return ;
+		return;
 	}
-	/*
-	char a[1];
-	recv(clientSocket, (char*)a, sizeof(a), 0);
-	a[0] = htonl(a[0]);
-	cout <<a<< endl;
-	*/
-	cout << "서버에 접속 했습니다 " << endl;
-	recv(clientSocket, (char*)index, sizeof(index),0);
+	cout << "\n  탱크리스 서버에 접속 했습니다 " << endl;
+	recv(clientSocket, (char*)index, sizeof(index), 0);
 	for (int i = 0; i < 3; i++) {
 		index[i] = ntohl(index[i]);
 	}
-	for (int i = 0; i < 3; i++) {
-		cout << index[i] << endl;
-	}
-	cout << "탱크리스를 시작하겠습니다. " << endl;
+	system("cls");
+	cout << "  탱크리스를 시작하겠습니다. " << endl;
+	Sleep(3000);
 
 }
 
 void tank_c::con() {
 	for (int i = 0; i < 3; i++) {
-		coordinate[i] = htonl(coordinate[i]);
-	}
-	send(clientSocket, (char*)coordinate, sizeof(coordinate), 0);
-	for (int i = 0; i < 3; i++) {
 		coordinate[i] = ntohl(coordinate[i]);
 	}
+	send(clientSocket, (char*)coordinate, sizeof(coordinate), 0);
+	recv(clientSocket, (char*)coordinate2, sizeof(coordinate2), 0);
+	for (int i = 0; i < 3; i++) {
+		coordinate[i] = ntohl(coordinate[i]);
+		coordinate2[i] = ntohl(coordinate2[i]);
+	}
+	map[coordinate2[0]][coordinate2[1]] = coordinate2[2];
+	print();
+	map[coordinate2[0]][coordinate2[1]] = 0;
 }
 
 void tank_c::move(void) {
@@ -130,7 +130,7 @@ void tank_c::move(void) {
 		}
 		if (key == STOP) break;
 		switch (key) {
-		case UP: 
+		case UP:
 			if (coordinate[0] != 0 && map[coordinate[0] - 1][coordinate[1]] != 1) {
 				map[coordinate[0] - 1][coordinate[1]] = 4;
 				map[coordinate[0]][coordinate[1]] = 0;
@@ -138,7 +138,7 @@ void tank_c::move(void) {
 				coordinate[2] = 4;
 			}
 			break;
-		case DOWN: 
+		case DOWN:
 			if (coordinate[0] != 9 && map[coordinate[0] + 1][coordinate[1]] != 1) {
 				map[coordinate[0] + 1][coordinate[1]] = 5;
 				map[coordinate[0]][coordinate[1]] = 0;
@@ -146,7 +146,7 @@ void tank_c::move(void) {
 				coordinate[2] = 5;
 			}
 			break;
-		case RIGHT: 
+		case RIGHT:
 			if (coordinate[1] != 9 && map[coordinate[0]][coordinate[1] + 1] != 1) {
 				map[coordinate[0]][coordinate[1] + 1] = 2;
 				map[coordinate[0]][coordinate[1]] = 0;
@@ -154,7 +154,7 @@ void tank_c::move(void) {
 				coordinate[2] = 2;
 			}
 			break;
-		case LEFT: 
+		case LEFT:
 			if (coordinate[1] != 0 && map[coordinate[0]][coordinate[1] - 1] != 1) {
 				map[coordinate[0]][coordinate[1] - 1] = 3;
 				map[coordinate[0]][coordinate[1]] = 0;
@@ -164,9 +164,8 @@ void tank_c::move(void) {
 			break;
 		}
 		con();
-		print();
-		}
 	}
+}
 
 void tank_c::print() {
 	if (index[1] == 1) {
@@ -203,10 +202,11 @@ void tank_c::print() {
 void tank_c::set() {
 	Cli_St();
 	con();
-	print();
-	cout << "111" << endl;
+	//print();
+	map[6][9] = 0;
 	while (1) {
 		move();
+		con();
 	}
 }
 int main() {
