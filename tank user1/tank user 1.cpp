@@ -171,6 +171,7 @@ void tank_c::move(void) {
 }
 
 void tank_c::print() {
+	int e[2] = { 0, };
 	if (index[1] ==  1) {
 		system("cls");
 		for (int i = 0; i < 10; i++) {
@@ -215,9 +216,241 @@ void tank_c::print() {
 			}
 			cout << endl;
 		}
-		Sleep(index[2]);
 	}
+	if (index[1] == 2) {
+		system("cls");
+		if ((coordinate[2] == 2 && coordinate[0] == coordinate2[0] && coordinate2[1] - coordinate[1] > -1 && coordinate2[1] - coordinate[1] < 6) || (coordinate[2] == 2 && coordinate[0] == coordinate3[0] && coordinate3[1] - coordinate[1] > -1 && coordinate3[1] - coordinate[1] < 6)) {
+			if (coordinate[0] == coordinate2[0] && coordinate2[1] - coordinate[1] > -1 && coordinate2[1] - coordinate[1] < 6) e[0] = 1;
+			if (coordinate[0] == coordinate3[0] && coordinate3[1] - coordinate[1] > -1 && coordinate3[1] - coordinate[1] < 6) e[1] = 1;
+			for (int i = 0; i < 10; i++) {
+				for (int j = 0; j < 10; j++) {
+					if (coordinate[0] == i && coordinate[1] == j) cout << "▶";
+					else if (coordinate2[0] == i && coordinate2[1] == j && e[0] == 1) {
+						if (map[i][j] == 2) cout << "▷";
+						if (map[i][j] == 3) cout << "◁";
+						if (map[i][j] == 4) cout << "△";
+						if (map[i][j] == 5) cout << "▽";
+					}
+					else if (coordinate3[0] == i && coordinate3[1] == j && e[1] == 1) {
+						if (map[i][j] == 2) cout << "▷";
+						if (map[i][j] == 3) cout << "◁";
+						if (map[i][j] == 4) cout << "△";
+						if (map[i][j] == 5) cout << "▽";
+					}
+					else {
+						if (map[i][j] == 1) cout << "■";
+						else cout << "□";
+					}
+				}
+				cout << endl;
+			}
+			cout << "1" << endl;
+			e[0] = 0;
+			e[1] = 0;
+		}
+		else if ((coordinate[2] == 3 && coordinate[0] == coordinate2[0] && coordinate[1] - coordinate2[1] > -1 && coordinate[1] - coordinate2[1] < 6) || (coordinate[2] == 3 && coordinate[0] == coordinate3[0] && coordinate[1] - coordinate3[1] > -1 && coordinate[1] - coordinate3[1] < 6)) {
+			if (coordinate[0] == coordinate2[0] && coordinate[1] - coordinate2[1] > -1 && coordinate[1] - coordinate2[1] < 6) e[0] = 1;
+			if (coordinate[0] == coordinate3[0] && coordinate[1] - coordinate3[1] > -1 && coordinate[1] - coordinate3[1] < 6) e[1] = 1;
+			for (int i = 0; i < 10; i++) {
+				for (int j = 0; j < 10; j++) {
+					if (coordinate[0] == i && coordinate[1] == j) cout << "◀";
+					else if (coordinate2[0] == i && coordinate2[1] == j && e[0] == 1) {
+						if (map[i][j] == 2) cout << "▷";
+						if (map[i][j] == 3) cout << "◁";
+						if (map[i][j] == 4) cout << "△";
+						if (map[i][j] == 5) cout << "▽";
+					}
+					else if (coordinate3[0] == i && coordinate3[1] == j && e[1] == 1) {
+						if (map[i][j] == 2) cout << "▷";
+						if (map[i][j] == 3) cout << "◁";
+						if (map[i][j] == 4) cout << "△";
+						if (map[i][j] == 5) cout << "▽";
+					}
+					else {
+						if (map[i][j] == 1) cout << "■";
+						else cout << "□";
+					}
+				}
+				cout << endl;
+			}
+			cout << "2" << endl;
+			e[0] = 0;
+			e[1] = 0;
+		}
+		else if ((coordinate[2] == 4 && coordinate[1] == coordinate2[1] && coordinate[0] - coordinate2[0] > -1 && coordinate[0] - coordinate2[0] < 6) || (coordinate[2] == 4 && coordinate[1] == coordinate3[1] && coordinate[1] - coordinate3[1] > -1 && coordinate[1] - coordinate3[1] < 6)) {
+			if (coordinate[1] == coordinate2[1] && coordinate[0] - coordinate2[0] > -1 && coordinate[0] - coordinate2[0] < 6) e[0] = 1;
+			if (coordinate[1] == coordinate3[1] && coordinate[1] - coordinate3[1] > -1 && coordinate[1] - coordinate3[1] < 6) e[1] = 1;
+			for (int i = 0; i < 10; i++) {
+				for (int j = 0; j < 10; j++) {
+					if (coordinate[0] == i && coordinate[1] == j) cout << "▲";
+					else if (coordinate2[0] == i && coordinate2[1] == j && e[0] == 1) {
+						if (map[i][j] == 2) cout << "▷";
+						if (map[i][j] == 3) cout << "◁";
+						if (map[i][j] == 4) cout << "△";
+						if (map[i][j] == 5) cout << "▽";
+					}
+					else if (coordinate3[0] == i && coordinate3[1] == j && e[1] == 1) {
+						if (map[i][j] == 2) cout << "▷";
+						if (map[i][j] == 3) cout << "◁";
+						if (map[i][j] == 4) cout << "△";
+						if (map[i][j] == 5) cout << "▽";
+					}
+					else {
+						if (map[i][j] == 1) cout << "■";
+						else cout << "□";
+					}
+				}
+				cout << endl;
+			}
+			cout << "3" << endl;
+			e[0] = 0;
+			e[1] = 0;
+		}
+		else if ((coordinate[2] == 5 && coordinate[1] == coordinate2[1] && coordinate2[0] - coordinate[0] > -1 && coordinate2[0] - coordinate[0] < 6) || (coordinate[2] == 5 && coordinate[1] == coordinate3[1] && coordinate3[1] - coordinate[1] > -1 && coordinate3[1] - coordinate[1] < 6)) {
+			if (coordinate[1] == coordinate2[1] && coordinate2[0] - coordinate[0] > -1 && coordinate2[0] - coordinate[0] < 6) e[0] = 1;
+			if (coordinate[1] == coordinate3[1] && coordinate3[1] - coordinate[1] > -1 && coordinate3[1] - coordinate[1] < 6) e[1] = 1;
+			for (int i = 0; i < 10; i++) {
+				for (int j = 0; j < 10; j++) {
+					if (coordinate[0] == i && coordinate[1] == j) cout << "▼";
+					else if (coordinate2[0] == i && coordinate2[1] == j && e[0] == 1) {
+						if (map[i][j] == 2) cout << "▷";
+						if (map[i][j] == 3) cout << "◁";
+						if (map[i][j] == 4) cout << "△";
+						if (map[i][j] == 5) cout << "▽";
+					}
+					else if (coordinate3[0] == i && coordinate3[1] == j && e[1] == 1) {
+						if (map[i][j] == 2) cout << "▷";
+						if (map[i][j] == 3) cout << "◁";
+						if (map[i][j] == 4) cout << "△";
+						if (map[i][j] == 5) cout << "▽";
+					}
+					else {
+						if (map[i][j] == 1) cout << "■";
+						else cout << "□";
+					}
+				}
+				cout << endl;
+			}
+			cout << "4" << endl;
+			e[0] = 0;
+			e[1] = 0;
+		}
+		else {
+			for (int i = 0; i < 10; i++) {
+				for (int j = 0; j < 10; j++) {
+					if (coordinate[0] == i && coordinate[1] == j) {
+						if (map[i][j] == 2) cout << "▶";
+						if (map[i][j] == 3) cout << "◀";
+						if (map[i][j] == 4) cout << "▲";
+						if (map[i][j] == 5) cout << "▼";
+					}
+					else {
+						if (map[i][j] == 1) cout << "■";
+						else cout << "□";
+					}
+				}
+				cout << endl;
+			}
 }
+	}
+	
+	Sleep(index[2]);
+}
+			/*
+			for (int i = 0; i < 10; i++) {
+				for (int j = 0; j < 10; j++) {
+					if (coordinate[0] == i && coordinate[1] == j) {
+						if (map[i][j] == 2) {
+							cout << "▶";
+							if (coordinate[0] == coordinate2[0] && coordinate2[1] - coordinate[1] > -1 && coordinate2[1] - coordinate[1] < 6) {
+								if (map[coordinate2[0]][coordinate2[1]] == 2) cout << "▷";
+								if (map[coordinate2[0]][coordinate2[1]] == 3) cout << "◁";
+								if (map[coordinate2[0]][coordinate2[1]] == 4) cout << "△";
+								if (map[coordinate2[0]][coordinate2[1]] == 5) cout << "▽";
+							}
+						}
+						if (map[i][j] == 3) {
+							cout << "◀";
+							if (coordinate[0] == coordinate2[0] && coordinate[1] - coordinate2[1] > -1 && coordinate[1] - coordinate2[1] < 6) {
+								if (map[coordinate2[0]][coordinate2[1]] == 2) cout << "▷";
+								if (map[coordinate2[0]][coordinate2[1]] == 3) cout << "◁";
+								if (map[coordinate2[0]][coordinate2[1]] == 4) cout << "△";
+								if (map[coordinate2[0]][coordinate2[1]] == 5) cout << "▽";
+							}
+						}
+						if (map[i][j] == 4) {
+							cout << "▲";
+							if (coordinate[0] == coordinate2[0] && coordinate2[1] - coordinate[1] > -1 && coordinate2[1] - coordinate[1] < 6) {
+								if (map[coordinate2[0]][coordinate2[1]] == 2) cout << "▷";
+								if (map[coordinate2[0]][coordinate2[1]] == 3) cout << "◁";
+								if (map[coordinate2[0]][coordinate2[1]] == 4) cout << "△";
+								if (map[coordinate2[0]][coordinate2[1]] == 5) cout << "▽";
+							}
+						}
+						if (map[i][j] == 5) {
+							cout << "▼";
+							if (coordinate[0] == coordinate2[0] && coordinate2[1] - coordinate[1] > -1 && coordinate2[1] - coordinate[1] < 6) {
+								if (map[coordinate2[0]][coordinate2[1]] == 2) cout << "▷";
+								if (map[coordinate2[0]][coordinate2[1]] == 3) cout << "◁";
+								if (map[coordinate2[0]][coordinate2[1]] == 4) cout << "△";
+								if (map[coordinate2[0]][coordinate2[1]] == 5) cout << "▽";
+							}
+						}
+					}
+					else {
+						if (map[i][j] == 0) cout << "□";
+						if (map[i][j] == 1) cout << "■";
+					}
+				}
+				cout << endl;
+			}
+		}
+
+		else {
+			for (int i = 0; i < 10; i++) {
+				for (int j = 0; j < 10; j++) {
+					if (coordinate[0] == i && coordinate[1] == j) {
+						if (map[i][j] == 2) cout << "▶";
+						if (map[i][j] == 3) cout << "◀";
+						if (map[i][j] == 4) cout << "▲";
+						if (map[i][j] == 5) cout << "▼";
+					}
+					else {
+						if (map[i][j] == 1) cout << "■";
+						else cout << "□";
+					}
+				}
+				cout << endl;
+			}
+			cout << "\n\n 1번 플레이어 좌표  " << coordinate[0] << "   " << coordinate[1] << endl;
+			cout << " 2번 플레이어 좌표  " << coordinate2[0] <<"   "<< coordinate2[1] << endl;
+			cout << " 3번 플레이어 좌표  " << coordinate3[0] << "   " << coordinate3[1] << endl;
+		}
+		cout << "\n--------------------\n" << endl;
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < 10; j++) {
+				if (i == 0) {
+					if (coordinate[1] == j) {
+						if (map[coordinate[0]][j] == 2) cout << "▶";
+						if (map[coordinate[0]][j] == 3) cout << "◀";
+						if (map[coordinate[0]][j] == 4) cout << "▲";
+						if (map[coordinate[0]][j] == 5) cout << "▼";
+					}
+					else {
+						if (map[coordinate[0]][j] == 0) cout << "  ";
+						if (map[coordinate[0]][j] == 1) cout << "■";
+						if (map[coordinate[0]][j] == 2) cout << "▷";
+						if (map[coordinate[0]][j] == 3) cout << "◁";
+						if (map[coordinate[0]][j] == 4) cout << "△";
+						if (map[coordinate[0]][j] == 5) cout << "▽";
+					}
+				}
+				if (i == 1) cout << "□";
+			}
+			cout << endl;
+		}
+	}
+	*/
 void tank_c::set() {
 	Cli_St();
 	con();
