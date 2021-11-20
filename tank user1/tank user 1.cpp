@@ -325,7 +325,7 @@ void tank_c::print() {
 							if (map[coordinate2[0]][coordinate2[1]] == 4) cout << "¡â";
 							if (map[coordinate2[0]][coordinate2[1]] == 5) cout << "¡ä";
 						}
-						else if (coordinate[1] == j && e[0] == 1) {
+						else if (coordinate3[1] == j && e[0] == 1) {
 							if (map[coordinate3[0]][coordinate3[1]] == 2) cout << "¢¹";
 							if (map[coordinate3[0]][coordinate3[1]] == 3) cout << "¢·";
 							if (map[coordinate3[0]][coordinate3[1]] == 4) cout << "¡â";
