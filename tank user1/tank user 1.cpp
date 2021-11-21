@@ -150,7 +150,15 @@ void tank_c::con() {
 			}
 		}
 	}
-	map[coordinate2[0]][coordinate2[1]] = coordinate2[2];
+	if (map[coordinate2[0]][coordinate2[1]] == 6) {
+		map[coordinate2[0]][coordinate2[1]] = 6;
+	}
+	else if (map[coordinate2[0]][coordinate2[1]] == 7) {
+		map[coordinate2[0]][coordinate2[1]] = 7;
+	}
+	else {
+		map[coordinate2[0]][coordinate2[1]] = coordinate2[2];
+	}
 	//	map[coordinate3[0]][coordinate3[1]] = coordinate3[2];
 	print();
 	map[coordinate2[0]][coordinate2[1]] = 0;
@@ -209,6 +217,7 @@ void tank_c::move(void) {
 				}
 				break;
 			case SPACE:
+				coordinate[3] = 1;
 				if (coordinate[2] == 2) {
 					if (a[0] == 1) {
 						key = STOP;
@@ -219,9 +228,11 @@ void tank_c::move(void) {
 						if (coordinate[1] + i < 10 && map[coordinate[0]][coordinate[1] + i] != 1) {
 							if (coordinate2[0] == coordinate[0] && coordinate[1] + i == coordinate2[1]) {
 								coordinate[4] = 1;
+								map[coordinate2[0]][coordinate2[1]] = 0;
 							}
 							if (coordinate3[0] == coordinate[0] && coordinate[1] + i == coordinate3[1]) {
 								coordinate[4] = 2;
+								map[coordinate3[0]][coordinate3[1]] = 0;
 							}
 							map[coordinate[0]][coordinate[1] + i] = 6;
 						}
@@ -238,9 +249,11 @@ void tank_c::move(void) {
 							if (coordinate[1] + i < 10 && map[coordinate[0]][coordinate[1] + i] != 1) {
 								if (coordinate2[0] == coordinate[0] && coordinate[1] + i == coordinate2[1]) {
 									coordinate[4] = 1;
+									map[coordinate2[0]][coordinate2[1]] = 0;
 								}
 								if (coordinate3[0] == coordinate[0] && coordinate[1] + i == coordinate3[1]) {
 									coordinate[4] = 2;
+									map[coordinate3[0]][coordinate3[1]] = 0;
 								}
 								map[coordinate[0]][coordinate[1] + i] = 6;
 							}
@@ -337,6 +350,7 @@ void tank_c::print() {
 						cout << "คำ";
 						map[i][j] = 0;
 					}
+					if (map[i][j] == 8)  cout << "ขฬ";
 				}
 			}
 			cout << endl;
