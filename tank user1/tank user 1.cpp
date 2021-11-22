@@ -25,15 +25,13 @@ using namespace std;
 class tank_p {
 public:
 	int map[10][10] = { 0, };
-	int coordinate[5] = { 8,0,2,0,0 };
+	int coordinate[4] = { 0, };
 	int coordinate2[5] = { 0, };
 	int coordinate3[5]={ 0, };
 	virtual void move(void) = 0;
-	int a[2] = { 0 ,};
 	tank_p();
 };
 tank_p::tank_p() {
-	map[8][0] = 2;
 	map[1][3] = 1;
 	map[1][4] = 1;
 	map[2][3] = 1;
@@ -63,7 +61,8 @@ private:
 	int key = STOP;
 	int tmp = 0;
 	int index[3] = { 0, };
-	int me[1] = { 0 };
+	int a[2] = { 0 , };
+	int me[4] = { 0 };
 public:
 	void Cli_St();
 	void move(void);
@@ -73,7 +72,6 @@ public:
 };
 
 void tank_c::Cli_St() {
-
 	/*WS_32.DLL 을 초기화 */
 	if (WSAStartup(MAKEWORD(2, 2), &wsdata) != 0) {
 		cout << "WS2_32.DLL 을 초기화 하는데 실패했습니다. " << endl;
@@ -95,25 +93,44 @@ void tank_c::Cli_St() {
 	}
 	cout << "\n  탱크리스 서버에 접속 했습니다 " << endl;
 	recv(clientSocket, (char*)me, sizeof(me), 0);
+	for (int i = 0; i < 4; i++) {
+		me[i] = ntohl(me[i]);
+	}
+	coordinate[0] = me[1];
+	coordinate[1] = me[2];
+	coordinate[2] = me[3];
+	map[coordinate[0]][coordinate[1]] = coordinate[2];
 	recv(clientSocket, (char*)index, sizeof(index), 0);
 	for (int i = 0; i < 2; i++) {
 		index[i] = ntohl(index[i]);
 	} 
-	me[0] = ntohl(me[0]);
 	system("cls");
+	cout << me[0] << endl;
 	cout << "\n  탱크리스를 시작하겠습니다. " << endl;
 	Sleep(3000);
 
 }
 
 void tank_c::con() {
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < 4; i++) {
 		coordinate[i] = ntohl(coordinate[i]);
 	}
-	send(clientSocket, (char*)coordinate, sizeof(coordinate), 0);
-	recv(clientSocket, (char*)coordinate2, sizeof(coordinate2), 0);
-	recv(clientSocket, (char*)coordinate3, sizeof(coordinate3), 0);
-	for (int i = 0; i < 5; i++) {
+	if (me[0] == 1) {
+		send(clientSocket, (char*)coordinate, sizeof(coordinate), 0);
+		recv(clientSocket, (char*)coordinate2, sizeof(coordinate2), 0);
+		recv(clientSocket, (char*)coordinate3, sizeof(coordinate3), 0);
+	}
+	if (me[0] == 2) {
+		recv(clientSocket, (char*)coordinate2, sizeof(coordinate2), 0);
+		send(clientSocket, (char*)coordinate, sizeof(coordinate), 0);
+		recv(clientSocket, (char*)coordinate3, sizeof(coordinate3), 0);
+	}
+	if (me[0] == 3) {
+		recv(clientSocket, (char*)coordinate2, sizeof(coordinate2), 0);
+		recv(clientSocket, (char*)coordinate3, sizeof(coordinate3), 0);
+		send(clientSocket, (char*)coordinate, sizeof(coordinate), 0);
+	}
+	for (int i = 0; i < 4; i++) {
 		coordinate[i] = ntohl(coordinate[i]);
 		coordinate2[i] = ntohl(coordinate2[i]);
 		coordinate3[i] = ntohl(coordinate3[i]);
@@ -647,11 +664,9 @@ void tank_c::print() {
 	}
 void tank_c::set() {
 	Cli_St();
-	con();
-	print();
 	while (1) {
-		move();
 		con();
+		move();
 	}
 }
 int main() {
