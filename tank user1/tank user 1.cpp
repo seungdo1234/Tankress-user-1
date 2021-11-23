@@ -125,30 +125,51 @@ void tank_c::con() {
 		coordinate[i] = ntohl(coordinate[i]);
 	}
 	if (me[0] == 1) {
-			send(clientSocket, (char*)coordinate, sizeof(coordinate), 0);
-			y = recv(clientSocket, (char*)we, sizeof(we), 0);
-			y = recv(clientSocket, (char*)coordinate2, sizeof(coordinate2), 0);
-			y = recv(clientSocket, (char*)coordinate3, sizeof(coordinate3), 0);
-			if (ntohl(we[0]) == 1 || ntohl(we[0]) == 2) {
-				index[0] = ntohl(we[0]);
+		send(clientSocket, (char*)coordinate, sizeof(coordinate), 0);
+		if (q == 1) {
+			y = -1;
+			return;
+		}
+		else {
+			q = 0;
+		}
+		y = recv(clientSocket, (char*)we, sizeof(we), 0);
+		y = recv(clientSocket, (char*)coordinate2, sizeof(coordinate2), 0);
+		y = recv(clientSocket, (char*)coordinate3, sizeof(coordinate3), 0);
+		if (ntohl(we[0]) == 1 || ntohl(we[0]) == 2) {
+			index[0] = ntohl(we[0]);
 		}
 		if (y <= 0) {
 			return;
 		}
 	}
 	if (me[0] == 2) {
-			y = recv(clientSocket, (char*)coordinate2, sizeof(coordinate2), 0);
-			send(clientSocket, (char*)coordinate, sizeof(coordinate), 0);
-			y = recv(clientSocket, (char*)coordinate3, sizeof(coordinate3), 0);
-		if (y <= -1) {
+		y = recv(clientSocket, (char*)coordinate2, sizeof(coordinate2), 0);
+		send(clientSocket, (char*)coordinate, sizeof(coordinate), 0);
+		if (q == 1) {
+			y = -1;
+			return;
+		}
+		else {
+			q = 0;
+		}
+		y = recv(clientSocket, (char*)coordinate3, sizeof(coordinate3), 0);
+		if (y <= 0) {
 			return;
 		}
 	}
 	if (me[0] == 3) {
-			y = recv(clientSocket, (char*)coordinate2, sizeof(coordinate2), 0);
-			y = recv(clientSocket, (char*)coordinate3, sizeof(coordinate3), 0);
-			 send(clientSocket, (char*)coordinate, sizeof(coordinate), 0);
-		if (y <= -1) {
+		y = recv(clientSocket, (char*)coordinate2, sizeof(coordinate2), 0);
+		y = recv(clientSocket, (char*)coordinate3, sizeof(coordinate3), 0);
+		send(clientSocket, (char*)coordinate, sizeof(coordinate), 0);
+		if (q == 1) {
+			y = -1;
+			return;
+		}
+		else {
+			q = 0;
+		}
+		if (y <= 0) {
 			return;
 		}
 	}
@@ -268,13 +289,6 @@ void tank_c::con() {
 			}
 		}
 	}
-	if (q == 1) {
-		y = 1;
-		return;
-	}
-	else {
-		q = 0;
-	}
 }
 
 void tank_c::move(void) {
@@ -382,6 +396,9 @@ void tank_c::move(void) {
 				break;
 			}
 			con();
+			if (y <= 0) {
+				return;
+			}
 		}
 	}
 }
@@ -389,6 +406,7 @@ void tank_c::print() {
 	int e[2] = { 0, };
 	int b = 0;
 	system("cls");
+	std::cout << "\n " << q << " \n";
 	std::cout << "\n " << me[0] << "번 플레이어 입니다. \n";
 	if (index[0] == 1) {
 		std::cout << "\n    비안개 모드 \n\n";
@@ -718,7 +736,7 @@ void tank_c::set() {
 	while (1) {
 		con();
 		move();
-		if (y == -1 ) {
+		if (y <= 0 ) {
 			return;
 		}
 	}
