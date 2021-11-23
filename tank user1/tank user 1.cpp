@@ -23,7 +23,7 @@
 class tank_p {
 public:
 	int map[10][10] = { 0, };
-	int coordinate[4] = { 0, };
+	int coordinate[5] = { 0, };
 	int coordinate2[5] = { 0, };
 	int coordinate3[5]={ 0, };
 	virtual void move(void) = 0;
@@ -61,6 +61,7 @@ private:
 	int index[3] = { 0, };
 	int a[2] = { 0 , };
 	int me[4] = { 0 };
+	int we[1] = { 0, };
 public:
 	void Cli_St();
 	void move(void);
@@ -118,13 +119,18 @@ void tank_c::con() {
 	if (coordinate3[2] != 0 && map[coordinate3[0]][coordinate3[1]] != 6 && map[coordinate3[0]][coordinate3[1]] != 7) {
 		map[coordinate3[0]][coordinate3[1]] = 0;
 	}
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 5; i++) {
 		coordinate[i] = ntohl(coordinate[i]);
 	}
 	if (me[0] == 1) {
 		send(clientSocket, (char*)coordinate, sizeof(coordinate), 0);
+		recv(clientSocket, (char*)we, sizeof(we), 0);
 		recv(clientSocket, (char*)coordinate2, sizeof(coordinate2), 0);
 		recv(clientSocket, (char*)coordinate3, sizeof(coordinate3), 0);
+		if (ntohl(we[0]) == 1 || ntohl(we[0]) == 2) {
+			index[0] = ntohl(we[0]);
+		}
+
 	}
 	if (me[0] == 2) {
 		recv(clientSocket, (char*)coordinate2, sizeof(coordinate2), 0);
@@ -136,10 +142,16 @@ void tank_c::con() {
 		recv(clientSocket, (char*)coordinate3, sizeof(coordinate3), 0);
 		send(clientSocket, (char*)coordinate, sizeof(coordinate), 0);
 	}
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 5; i++) {
 		coordinate[i] = ntohl(coordinate[i]);
 		coordinate2[i] = ntohl(coordinate2[i]);
 		coordinate3[i] = ntohl(coordinate3[i]);
+	}
+	if (coordinate2[4] == 1 || coordinate2[4] == 2) {
+		index[0] = coordinate2[4];
+	}
+	if (coordinate3[4] == 1 || coordinate3[4] == 2) {
+		index[0] = coordinate3[4];
 	}
 	if (coordinate2[3] == 1) {
 		if (coordinate2[2] == 2) {
@@ -354,6 +366,7 @@ void tank_c::print() {
 	int b = 0;
 	system("cls");
 	if (index[0] == 1) {
+		std::cout << "\n    비안개 모드 \n\n";
 		for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 10; j++) {
 				if (coordinate[0] == i && coordinate[1] == j && coordinate[2] != 0 && map[coordinate[0]][coordinate[1]] != 0) {
@@ -401,6 +414,7 @@ void tank_c::print() {
 		}
 	}
 	if (index[0] == 2) {
+		std::cout << "\n    안개 모드 \n\n";
 		if ( (coordinate[2] == 2 && coordinate[0] == coordinate2[0] && coordinate2[1] - coordinate[1] > -1 && coordinate2[1] - coordinate[1] < 6) || (coordinate[2] == 2 && coordinate[0] == coordinate3[0] && coordinate3[1] - coordinate[1] > -1 && coordinate3[1] - coordinate[1] < 6)) {
 			if (coordinate[0] == coordinate2[0] && coordinate2[1] - coordinate[1] > -1 && coordinate2[1] - coordinate[1] < 6 && coordinate2[2] != 0) e[0] = 1;
 			if (coordinate[0] == coordinate3[0] && coordinate3[1] - coordinate[1] > -1 && coordinate3[1] - coordinate[1] < 6 && coordinate3[2] != 0) e[1] = 1;
