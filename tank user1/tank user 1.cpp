@@ -747,7 +747,7 @@ tank_c :: ~tank_c() {
 	}
 	else std::cout << "\n   You Lose  ¤Ğ¤Ğ \n\n";
 
-	system("pause");
+	system("PAUSE");
 }
 int main() {
 	tank_c a;
