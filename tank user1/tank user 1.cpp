@@ -62,12 +62,14 @@ private:
 	int a[2] = { 0 , };
 	int me[4] = { 0 };
 	int we[1] = { 0, };
+	int y = 2, q = 0 ;
 public:
 	void Cli_St();
 	void move(void);
 	void print();
 	void set();
 	void con();
+	~tank_c();
 };
 
 void tank_c::Cli_St() {
@@ -123,24 +125,32 @@ void tank_c::con() {
 		coordinate[i] = ntohl(coordinate[i]);
 	}
 	if (me[0] == 1) {
-		send(clientSocket, (char*)coordinate, sizeof(coordinate), 0);
-		recv(clientSocket, (char*)we, sizeof(we), 0);
-		recv(clientSocket, (char*)coordinate2, sizeof(coordinate2), 0);
-		recv(clientSocket, (char*)coordinate3, sizeof(coordinate3), 0);
-		if (ntohl(we[0]) == 1 || ntohl(we[0]) == 2) {
-			index[0] = ntohl(we[0]);
+			send(clientSocket, (char*)coordinate, sizeof(coordinate), 0);
+			y = recv(clientSocket, (char*)we, sizeof(we), 0);
+			y = recv(clientSocket, (char*)coordinate2, sizeof(coordinate2), 0);
+			y = recv(clientSocket, (char*)coordinate3, sizeof(coordinate3), 0);
+			if (ntohl(we[0]) == 1 || ntohl(we[0]) == 2) {
+				index[0] = ntohl(we[0]);
 		}
-
+		if (y <= 0) {
+			return;
+		}
 	}
 	if (me[0] == 2) {
-		recv(clientSocket, (char*)coordinate2, sizeof(coordinate2), 0);
-		send(clientSocket, (char*)coordinate, sizeof(coordinate), 0);
-		recv(clientSocket, (char*)coordinate3, sizeof(coordinate3), 0);
+			y = recv(clientSocket, (char*)coordinate2, sizeof(coordinate2), 0);
+			send(clientSocket, (char*)coordinate, sizeof(coordinate), 0);
+			y = recv(clientSocket, (char*)coordinate3, sizeof(coordinate3), 0);
+		if (y <= -1) {
+			return;
+		}
 	}
 	if (me[0] == 3) {
-		recv(clientSocket, (char*)coordinate2, sizeof(coordinate2), 0);
-		recv(clientSocket, (char*)coordinate3, sizeof(coordinate3), 0);
-		send(clientSocket, (char*)coordinate, sizeof(coordinate), 0);
+			y = recv(clientSocket, (char*)coordinate2, sizeof(coordinate2), 0);
+			y = recv(clientSocket, (char*)coordinate3, sizeof(coordinate3), 0);
+			 send(clientSocket, (char*)coordinate, sizeof(coordinate), 0);
+		if (y <= -1) {
+			return;
+		}
 	}
 	for (int i = 0; i < 5; i++) {
 		coordinate[i] = ntohl(coordinate[i]);
@@ -251,25 +261,39 @@ void tank_c::con() {
 	}
 	print();
 	coordinate[3] = 0;
+	for (int i = 0; i < 10; i++) {
+		for (int j = 0; j < 10; j++) {
+			if (map[i][j] == 2 || map[i][j] == 3 || map[i][j] == 4 || map[i][j] == 5) {
+				q++;
+			}
+		}
+	}
+	if (q == 1) {
+		y = 1;
+		return;
+	}
+	else {
+		q = 0;
+	}
 }
 
 void tank_c::move(void) {
-	while (1) {
-		if (a[1] == 0) {
-		if (kbhit()) {
-			tmp = _getch();
-			if (tmp == 224) tmp = _getch();
-			if (tmp == UP || tmp == DOWN || tmp == RIGHT || tmp == LEFT || tmp == STOP || tmp == SPACE) {
-				key = tmp;
+	if (a[1] == 0) {
+		while (1) {
+			if (kbhit()) {
+				tmp = _getch();
+				if (tmp == 224) tmp = _getch();
+				if (tmp == UP || tmp == DOWN || tmp == RIGHT || tmp == LEFT || tmp == STOP || tmp == SPACE) {
+					key = tmp;
+				}
 			}
-		}
-		if (key == STOP) {
-			a[0] = 1;
-			break;
-		}
-		else if (key == UP || key == DOWN || key == RIGHT || key == LEFT) {
-			a[0] = 0;
-		}
+			if (key == STOP) {
+				a[0] = 1;
+				break;
+			}
+			else if (key == UP || key == DOWN || key == RIGHT || key == LEFT) {
+				a[0] = 0;
+			}
 			switch (key) {
 			case UP:
 				if (coordinate[0] != 0 && map[coordinate[0] - 1][coordinate[1]] == 0) {
@@ -280,27 +304,27 @@ void tank_c::move(void) {
 				}
 				break; // coordinate[0] + 1 != coordinate2[0] && coordinate[0] + 1 != coordinate3[0]  (coordinate[0] + 1 != coordinate2[0] || coordinate[0] + 1 != coordinate3[0]) && 
 			case DOWN:
-				if (coordinate[0] != 9 && map[coordinate[0] + 1][coordinate[1]] == 0 ) {
-						map[coordinate[0] + 1][coordinate[1]] = 5;
-						map[coordinate[0]][coordinate[1]] = 0;
-						coordinate[0] += 1;
-						coordinate[2] = 5;
+				if (coordinate[0] != 9 && map[coordinate[0] + 1][coordinate[1]] == 0) {
+					map[coordinate[0] + 1][coordinate[1]] = 5;
+					map[coordinate[0]][coordinate[1]] = 0;
+					coordinate[0] += 1;
+					coordinate[2] = 5;
 				}
 				break;
 			case RIGHT:
 				if (coordinate[1] != 9 && map[coordinate[0]][coordinate[1] + 1] == 0) {
-						map[coordinate[0]][coordinate[1] + 1] = 2;
-						map[coordinate[0]][coordinate[1]] = 0;
-						coordinate[1] += 1;
-						coordinate[2] = 2;
+					map[coordinate[0]][coordinate[1] + 1] = 2;
+					map[coordinate[0]][coordinate[1]] = 0;
+					coordinate[1] += 1;
+					coordinate[2] = 2;
 				}
 				break;
 			case LEFT:
 				if (coordinate[1] != 0 && map[coordinate[0]][coordinate[1] - 1] == 0) {
-						map[coordinate[0]][coordinate[1] - 1] = 3;
-						map[coordinate[0]][coordinate[1]] = 0;
-						coordinate[1] -= 1;
-						coordinate[2] = 3;
+					map[coordinate[0]][coordinate[1] - 1] = 3;
+					map[coordinate[0]][coordinate[1]] = 0;
+					coordinate[1] -= 1;
+					coordinate[2] = 3;
 				}
 				break;
 			case SPACE:
@@ -357,14 +381,15 @@ void tank_c::move(void) {
 				}
 				break;
 			}
+			con();
 		}
-		con();
 	}
 }
 void tank_c::print() {
 	int e[2] = { 0, };
 	int b = 0;
 	system("cls");
+	std::cout << "\n " << me[0] << "번 플레이어 입니다. \n";
 	if (index[0] == 1) {
 		std::cout << "\n    비안개 모드 \n\n";
 		for (int i = 0; i < 10; i++) {
@@ -686,7 +711,6 @@ void tank_c::print() {
 	if (coordinate[2] == 0) {
 		std::cout << "\n당신의 탱크는 부숴졌습니다. \n";
 	}
-
 	Sleep(index[1]);
 }
 void tank_c::set() {
@@ -694,7 +718,17 @@ void tank_c::set() {
 	while (1) {
 		con();
 		move();
+		if (y == -1 ) {
+			return;
+		}
 	}
+}
+tank_c :: ~tank_c() {
+	system("cls");
+	if (coordinate[2] != 0) {
+		std::cout << "\n   You Win  !!!!!!\n\n";
+	}
+	else std::cout << "\n   You Lose  ㅠㅠ \n\n";
 }
 int main() {
 	tank_c a;
