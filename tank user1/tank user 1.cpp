@@ -406,7 +406,6 @@ void tank_c::print() {
 	int e[2] = { 0, };
 	int b = 0;
 	system("cls");
-	std::cout << "\n " << q << " \n";
 	std::cout << "\n " << me[0] << "번 플레이어 입니다. \n";
 	if (index[0] == 1) {
 		std::cout << "\n    비안개 모드 \n\n";
