@@ -24,20 +24,19 @@ unsigned  threadID;
 
 class tank_p {
 public:
-	virtual void move(void) = 0;
-	int map[10][10] = { 0, };
-	int coordinate[6] = { 0, };
+	virtual void move(void) = 0; // 탱크움직이는 추상클래스
+	int map[10][10] = { 0, }; //맵
+	int coordinate[6] = { 0, }; //각 좌표
 	int coordinate2[6] = { 0, };
 	int coordinate3[6] = { 0, };
-	SOCKET clientSocket;
-	int a[2] = { 0 , };
-	int we[1] = { 0, };
-	int index[3] = { 0, };
-	int me[4] = { 0 };
-	int key = STOP;
-	int y = 2, q = 0;
-	int tmp = 0;
-	tank_p();
+	SOCKET clientSocket; 
+	int a[2] = { 0 , }; // 클라이언트 죽음
+	int index[3] = { 0, }; // 이동시간, 모드설정, 클라이언트접속수 
+	int me[4] = { 0 }; // 서버에서오는 내 상태좌표값
+	int key = STOP; 
+	int y = 2, q = 0;  //클라이언트 끝내는 변수
+	tank_p(); //장애물 찍는 생성자
+	~tank_p(); // 승패 여부 출력 소멸자
 };
 tank_p::tank_p() {
 	map[1][3] = 1;
@@ -61,20 +60,17 @@ tank_p::tank_p() {
 	map[8][7] = 1;
 	map[8][8] = 1;
 }
-class tank_c : public tank_p {
+class tank_c : public tank_p { //자식 클래스
 private:
 	WSADATA wsdata;
 	SOCKADDR_IN serverAddress;
 	SOCKET clientSocket;
-	int key = STOP;
 public:
-	void Cli_St();
-	void move(void);
-	void print();
-	void set();
-	void con();
-	static unsigned __stdcall con(void* arg);
-	~tank_c();
+	void Cli_St(); //서버접속
+	void move(void); //움직임
+	void print(); //맵 출력
+	void set(); // 게임 시작 
+	void con(); // 서버로 좌표값을 보내고 받는 함수
 };
 
 void tank_c::Cli_St() {
@@ -148,9 +144,6 @@ void tank_c::con() {
 		}
 		if (index[2] > 2) {
 			y = recv(clientSocket, (char*)coordinate3, sizeof(coordinate3), 0);
-		}
-		if (ntohl(we[0]) == 1 || ntohl(we[0]) == 2) {
-			index[0] = ntohl(we[0]);
 		}
 		if (y <= 0) {
 			return;
@@ -305,7 +298,9 @@ void tank_c::move(void) {
 	if (a[1] == 0) {
 		while (1) {
 			if (kbhit()) {
-				tmp = _getch();
+				int 
+					
+					tmp = _getch();
 				if (tmp == 224) tmp = _getch();
 				if (tmp == UP || tmp == DOWN || tmp == RIGHT || tmp == LEFT || tmp == STOP || tmp == SPACE) {
 					key = tmp;
@@ -836,13 +831,8 @@ void tank_c::print() {
 	}
 	Sleep(index[1]);
 }
-unsigned __stdcall tank_c::con(void* arg) {
-	return 1;
-}
 void tank_c::set() {
 	Cli_St();
-	unsigned long thread;
-	thread = _beginthreadex(NULL, 0, con, (void*)map, 0, &threadID);
 	while (1) {
 		con();
 		move();
@@ -851,7 +841,7 @@ void tank_c::set() {
 		}
 	}
 }
-tank_c :: ~tank_c() {
+tank_p :: ~tank_p() {
 	system("cls");
 	closesocket(clientSocket);
 	if (coordinate[2] !=0) {
@@ -864,6 +854,4 @@ tank_c :: ~tank_c() {
 int main() {
 	tank_c a;
 	a.set();
-
-	//a.set();
 }
