@@ -19,14 +19,24 @@
 #pragma comment (lib, "ws2_32.lib")
 #pragma warning(disable:4996)
 
+HANDLE  mutex;
+unsigned  threadID;
 
 class tank_p {
 public:
-	int map[10][10] = { 0, };
-	int coordinate[5] = { 0, };
-	int coordinate2[5] = { 0, };
-	int coordinate3[5]={ 0, };
 	virtual void move(void) = 0;
+	int map[10][10] = { 0, };
+	int coordinate[6] = { 0, };
+	int coordinate2[6] = { 0, };
+	int coordinate3[6] = { 0, };
+	SOCKET clientSocket;
+	int a[2] = { 0 , };
+	int we[1] = { 0, };
+	int index[3] = { 0, };
+	int me[4] = { 0 };
+	int key = STOP;
+	int y = 2, q = 0;
+	int tmp = 0;
 	tank_p();
 };
 tank_p::tank_p() {
@@ -57,18 +67,13 @@ private:
 	SOCKADDR_IN serverAddress;
 	SOCKET clientSocket;
 	int key = STOP;
-	int tmp = 0;
-	int index[3] = { 0, };
-	int a[2] = { 0 , };
-	int me[4] = { 0 };
-	int we[1] = { 0, };
-	int y = 2, q = 0 ;
 public:
 	void Cli_St();
 	void move(void);
 	void print();
 	void set();
 	void con();
+	static unsigned __stdcall con(void* arg);
 	~tank_c();
 };
 
@@ -102,12 +107,12 @@ void tank_c::Cli_St() {
 	coordinate[2] = me[3];
 	map[coordinate[0]][coordinate[1]] = coordinate[2];
 	recv(clientSocket, (char*)index, sizeof(index), 0);
-	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i < 3; i++) {
 		index[i] = ntohl(index[i]);
-	} 
+	}
 	system("cls");
-	std::cout << "\n  탱크리스를 시작하겠습니다. \n";
-	Sleep(3000);
+	std::cout << "\n\n  탱크리스를 시작하겠습니다. \n";
+	Sleep(4000);
 
 }
 
@@ -115,27 +120,35 @@ void tank_c::con() {
 	if (coordinate[2] == 0) {
 		map[coordinate[0]][coordinate[1]] = 0;
 	}
-	if (coordinate2[2] != 0 && map[coordinate2[0]][coordinate2[1]] != 6 && map[coordinate2[0]][coordinate2[1]] != 7) {
-		map[coordinate2[0]][coordinate2[1]] = 0;
+	if (index[2] > 1) {
+		if (coordinate2[2] != 0 && map[coordinate2[0]][coordinate2[1]] != 6 && map[coordinate2[0]][coordinate2[1]] != 7) {
+			map[coordinate2[0]][coordinate2[1]] = 0;
+		}
 	}
-	if (coordinate3[2] != 0 && map[coordinate3[0]][coordinate3[1]] != 6 && map[coordinate3[0]][coordinate3[1]] != 7) {
-		map[coordinate3[0]][coordinate3[1]] = 0;
+	if (index[2] > 2) {
+		if (coordinate3[2] != 0 && map[coordinate3[0]][coordinate3[1]] != 6 && map[coordinate3[0]][coordinate3[1]] != 7) {
+			map[coordinate3[0]][coordinate3[1]] = 0;
+		}
 	}
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < 6; i++) {
 		coordinate[i] = ntohl(coordinate[i]);
 	}
 	if (me[0] == 1) {
 		send(clientSocket, (char*)coordinate, sizeof(coordinate), 0);
 		if (q == 1) {
 			y = -1;
+			coordinate[2] = ntohl(coordinate[2]);
 			return;
 		}
 		else {
 			q = 0;
 		}
-		y = recv(clientSocket, (char*)we, sizeof(we), 0);
-		y = recv(clientSocket, (char*)coordinate2, sizeof(coordinate2), 0);
-		y = recv(clientSocket, (char*)coordinate3, sizeof(coordinate3), 0);
+		if (index[2] > 1) {
+			y = recv(clientSocket, (char*)coordinate2, sizeof(coordinate2), 0);
+		}
+		if (index[2] > 2) {
+			y = recv(clientSocket, (char*)coordinate3, sizeof(coordinate3), 0);
+		}
 		if (ntohl(we[0]) == 1 || ntohl(we[0]) == 2) {
 			index[0] = ntohl(we[0]);
 		}
@@ -148,12 +161,15 @@ void tank_c::con() {
 		send(clientSocket, (char*)coordinate, sizeof(coordinate), 0);
 		if (q == 1) {
 			y = -1;
+			coordinate[2] = ntohl(coordinate[2]);
 			return;
 		}
 		else {
 			q = 0;
 		}
-		y = recv(clientSocket, (char*)coordinate3, sizeof(coordinate3), 0);
+		if (index[2] > 2) {
+			y = recv(clientSocket, (char*)coordinate3, sizeof(coordinate3), 0);
+		}
 		if (y <= 0) {
 			return;
 		}
@@ -164,6 +180,7 @@ void tank_c::con() {
 		send(clientSocket, (char*)coordinate, sizeof(coordinate), 0);
 		if (q == 1) {
 			y = -1;
+			coordinate[2] = ntohl(coordinate[2]);
 			return;
 		}
 		else {
@@ -173,19 +190,13 @@ void tank_c::con() {
 			return;
 		}
 	}
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < 6; i++) {
 		coordinate[i] = ntohl(coordinate[i]);
 		coordinate2[i] = ntohl(coordinate2[i]);
 		coordinate3[i] = ntohl(coordinate3[i]);
 	}
-	if (coordinate2[4] == 1 || coordinate2[4] == 2) {
-		index[0] = coordinate2[4];
-	}
-	if (coordinate3[4] == 1 || coordinate3[4] == 2) {
-		index[0] = coordinate3[4];
-	}
 	if (coordinate2[3] == 1) {
-		if (coordinate2[2] == 2) {
+	if (coordinate2[2] == 2) {
 			for (int i = 1; i < 4; i++) {
 				if (coordinate2[1] + i > 9 || map[coordinate2[0]][coordinate2[1] + i] == 1) {
 					break;
@@ -252,10 +263,6 @@ void tank_c::con() {
 			}
 		}
 	}
-	if (map[coordinate[0]][coordinate[1]] == 6 || map[coordinate[0]][coordinate[1]] == 7 && a[1] == 0) {
-		a[1] = 1;
-		coordinate[2] = 0;
-	}
 	if (map[coordinate2[0]][coordinate2[1]] == 6) {
 		map[coordinate2[0]][coordinate2[1]] = 6;
 	}
@@ -265,7 +272,6 @@ void tank_c::con() {
 	else {
 		if (coordinate2[2] != 0) {
 			map[coordinate2[0]][coordinate2[1]] = coordinate2[2];
-
 		}
 	}
 	if (map[coordinate3[0]][coordinate3[1]] == 6) {
@@ -277,11 +283,14 @@ void tank_c::con() {
 	else {
 		if (coordinate3[2] != 0) {
 			map[coordinate3[0]][coordinate3[1]] = coordinate3[2];
-
 		}
 	}
+	if ((map[coordinate[0]][coordinate[1]] == 6 || map[coordinate[0]][coordinate[1]] == 7 && a[1] == 0) || (a[0] == 0 && ((me[0] == 1 && (coordinate2[5] == 1 || coordinate3[5] == 1)) || (me[0] == 2 && (coordinate2[5] == 2 || coordinate3[5] == 2)) || (me[0] == 3 && (coordinate2[5] == 3 || coordinate3[5] == 3))))) {
+		a[1] = 1;
+		coordinate[2] = 0;
+		key = STOP;
+	}
 	print();
-	coordinate[3] = 0;
 	for (int i = 0; i < 10; i++) {
 		for (int j = 0; j < 10; j++) {
 			if (map[i][j] == 2 || map[i][j] == 3 || map[i][j] == 4 || map[i][j] == 5) {
@@ -289,6 +298,7 @@ void tank_c::con() {
 			}
 		}
 	}
+	coordinate[3] = 0;
 }
 
 void tank_c::move(void) {
@@ -316,7 +326,7 @@ void tank_c::move(void) {
 					coordinate[0] -= 1;
 					coordinate[2] = 4;
 				}
-				break; // coordinate[0] + 1 != coordinate2[0] && coordinate[0] + 1 != coordinate3[0]  (coordinate[0] + 1 != coordinate2[0] || coordinate[0] + 1 != coordinate3[0]) && 
+				break; 
 			case DOWN:
 				if (coordinate[0] != 9 && map[coordinate[0] + 1][coordinate[1]] == 0) {
 					map[coordinate[0] + 1][coordinate[1]] = 5;
@@ -353,6 +363,30 @@ void tank_c::move(void) {
 						if (coordinate[1] + i > 9 || map[coordinate[0]][coordinate[1] + i] == 1) {
 							break;
 						}
+						if (me[0] == 1) {
+							if (coordinate2[0] == coordinate[0] && coordinate[1] + i == coordinate2[1]) {
+								coordinate[5] = 2;
+							}
+							if (coordinate3[0] == coordinate[0] && coordinate[1] + i == coordinate3[1]) {
+								coordinate[5] = 3;
+							}
+						}
+						if (me[0] == 2) {
+							if (coordinate2[0] == coordinate[0] && coordinate[1] + i == coordinate2[1]) {
+								coordinate[5] = 1;
+							}
+							if (coordinate3[0] == coordinate[0] && coordinate[1] + i == coordinate3[1]) {
+								coordinate[5] = 3;
+							}
+						}
+						if (me[0] == 3) {
+							if (coordinate2[0] == coordinate[0] && coordinate[1] + i == coordinate2[1]) {
+								coordinate[5] = 1;
+							}
+							if (coordinate3[0] == coordinate[0] && coordinate[1] + i == coordinate3[1]) {
+								coordinate[5] = 2;
+							}
+						}
 						map[coordinate[0]][coordinate[1] + i] = 6;
 
 					}
@@ -366,6 +400,30 @@ void tank_c::move(void) {
 						if (coordinate[1] - i < 0 || map[coordinate[0]][coordinate[1] - i] == 1) {
 							break;
 						}
+						if (me[0] == 1) {
+							if (coordinate2[0] == coordinate[0] && coordinate[1] - i == coordinate2[1]) {
+								coordinate[5] = 2;
+							}
+							if (coordinate3[0] == coordinate[0] && coordinate[1] - i == coordinate3[1]) {
+								coordinate[5] = 3;
+							}
+						}
+						if (me[0] == 2) {
+							if (coordinate2[0] == coordinate[0] && coordinate[1] - i == coordinate2[1]) {
+								coordinate[5] = 1;
+							}
+							if (coordinate3[0] == coordinate[0] && coordinate[1] - i == coordinate3[1]) {
+								coordinate[5] = 3;
+							}
+						}
+						if (me[0] == 3) {
+							if (coordinate2[0] == coordinate[0] && coordinate[1] - i == coordinate2[1]) {
+								coordinate[5] = 1;
+							}
+							if (coordinate3[0] == coordinate[0] && coordinate[1] - i == coordinate3[1]) {
+								coordinate[5] = 2;
+							}
+						}
 						map[coordinate[0]][coordinate[1] - i] = 6;
 					}
 				}
@@ -378,6 +436,30 @@ void tank_c::move(void) {
 						if (coordinate[0] - i < 0 || map[coordinate[0] - i][coordinate[1]] == 1) {
 							break;
 						}
+						if (me[0] == 1) {
+							if (coordinate2[1] == coordinate[1] && coordinate[0] - i == coordinate2[0]) {
+								coordinate[5] = 2;
+							}
+							if (coordinate3[1] == coordinate[1] && coordinate[0] - i == coordinate3[0]) {
+								coordinate[5] = 3;
+							}
+						}
+						if (me[0] == 2) {
+							if (coordinate2[1] == coordinate[1] && coordinate[0] - i == coordinate2[0]) {
+								coordinate[5] = 1;
+							}
+							if (coordinate3[1] == coordinate[1] && coordinate[0] - i == coordinate3[0]) {
+								coordinate[5] = 3;
+							}
+						}
+						if (me[0] == 3) {
+							if (coordinate2[1] == coordinate[1] && coordinate[0] - i == coordinate2[0]) {
+								coordinate[5] = 1;
+							}
+							if (coordinate3[1] == coordinate[1] && coordinate[0] - i == coordinate3[0]) {
+								coordinate[5] = 2;
+							}
+						}
 						map[coordinate[0] - i][coordinate[1]] = 7;
 					}
 				}
@@ -389,6 +471,30 @@ void tank_c::move(void) {
 					for (int i = 1; i < 4; i++) {
 						if (coordinate[0] + i > 9 || map[coordinate[0] + i][coordinate[1]] == 1) {
 							break;
+						}
+						if (me[0] == 1) {
+							if (coordinate2[1] == coordinate[1] && coordinate[0] + i == coordinate2[0]) {
+								coordinate[5] = 2;
+							}
+							if (coordinate3[1] == coordinate[1] && coordinate[0] + i == coordinate3[0]) {
+								coordinate[5] = 3;
+							}
+						}
+						if (me[0] == 2) {
+							if (coordinate2[1] == coordinate[1] && coordinate[0] + i == coordinate2[0]) {
+								coordinate[5] = 1;
+							}
+							if (coordinate3[1] == coordinate[1] && coordinate[0] + i == coordinate3[0]) {
+								coordinate[5] = 3;
+							}
+						}
+						if (me[0] == 3) {
+							if (coordinate2[1] == coordinate[1] && coordinate[0] + i == coordinate2[0]) {
+								coordinate[5] = 1;
+							}
+							if (coordinate3[1] == coordinate[1] && coordinate[0] + i == coordinate3[0]) {
+								coordinate[5] = 2;
+							}
 						}
 						map[coordinate[0] + i][coordinate[1]] = 7;
 					}
@@ -411,7 +517,7 @@ void tank_c::print() {
 		std::cout << "\n    비안개 모드 \n\n";
 		for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 10; j++) {
-				if (coordinate[0] == i && coordinate[1] == j && coordinate[2] != 0 && map[coordinate[0]][coordinate[1]] != 0) {
+				if (coordinate[0] == i && coordinate[1] == j && coordinate[2] != 0 && map[coordinate[0]][coordinate[1]] != 0 && coordinate[2] !=0 ) {
 					if (map[i][j] == 2) std::cout << "▶";
 					if (map[i][j] == 3) std::cout << "◀";
 					if (map[i][j] == 4) std::cout << "▲";
@@ -434,20 +540,21 @@ void tank_c::print() {
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 10; j++) {
 				if (i == 0) {
-					if (coordinate[1] == j && coordinate[2] != 0 && map[coordinate[0]][coordinate[1]] != 0) {
+					if (coordinate[1] == j && coordinate[2] != 0 && map[coordinate[0]][coordinate[1]] != 0 && coordinate[0] != 0) {
 						if (map[coordinate[0]][j] == 2) std::cout << "▶";
 						if (map[coordinate[0]][j] == 3) std::cout << "◀";
 						if (map[coordinate[0]][j] == 4) std::cout << "▲";
 						if (map[coordinate[0]][j] == 5) std::cout << "▼";
 					}
 					else {
-						if (map[coordinate[0]][j] == 0) std::cout << "  ";
-						else if (map[coordinate[0]][j] == 1) std::cout << "■";
+						if (map[coordinate[0]][j] == 1) std::cout << "■";
 						else if (map[coordinate[0]][j] == 2) std::cout << "▷";
 						else if (map[coordinate[0]][j] == 3) std::cout << "◁";
 						else if (map[coordinate[0]][j] == 4) std::cout << "△";
 						else if (map[coordinate[0]][j] == 5) std::cout << "▽";
 						else if (map[coordinate[0]][j] == 6) std::cout << "ㅡ";
+						else if (map[coordinate[0]][j] == 7) std::cout << "ㅣ";
+						else  std::cout << "  ";
 					}
 				}
 				if (i == 1) std::cout << "□";
@@ -457,7 +564,7 @@ void tank_c::print() {
 	}
 	if (index[0] == 2) {
 		std::cout << "\n    안개 모드 \n\n";
-		if ( (coordinate[2] == 2 && coordinate[0] == coordinate2[0] && coordinate2[1] - coordinate[1] > -1 && coordinate2[1] - coordinate[1] < 6) || (coordinate[2] == 2 && coordinate[0] == coordinate3[0] && coordinate3[1] - coordinate[1] > -1 && coordinate3[1] - coordinate[1] < 6)) {
+		if ((coordinate[2] == 2 && coordinate[0] == coordinate2[0] && coordinate2[1] - coordinate[1] > -1 && coordinate2[1] - coordinate[1] < 6) || (coordinate[2] == 2 && coordinate[0] == coordinate3[0] && coordinate3[1] - coordinate[1] > -1 && coordinate3[1] - coordinate[1] < 6)) {
 			if (coordinate[0] == coordinate2[0] && coordinate2[1] - coordinate[1] > -1 && coordinate2[1] - coordinate[1] < 6 && coordinate2[2] != 0) e[0] = 1;
 			if (coordinate[0] == coordinate3[0] && coordinate3[1] - coordinate[1] > -1 && coordinate3[1] - coordinate[1] < 6 && coordinate3[2] != 0) e[1] = 1;
 			for (int i = 0; i < 10; i++) {
@@ -485,13 +592,13 @@ void tank_c::print() {
 					if (i == 0) {
 						if (coordinate[1] == j)  std::cout << "▶";
 						else if (coordinate2[1] == j && e[0] == 1) {
-							 if (map[coordinate2[0]][coordinate2[1]] == 2) std::cout << "▷";
+							if (map[coordinate2[0]][coordinate2[1]] == 2) std::cout << "▷";
 							else if (map[coordinate2[0]][coordinate2[1]] == 3) std::cout << "◁";
 							else if (map[coordinate2[0]][coordinate2[1]] == 4) std::cout << "△";
 							else if (map[coordinate2[0]][coordinate2[1]] == 5) std::cout << "▽";
 							else if (map[i][j] == 6 && i == coordinate[0] && coordinate[1] < j && coordinate[1] + 5 >= j) std::cout << "ㅡ";
 						}
-						else if ( coordinate3[1] == j && e[1] == 1) {
+						else if (coordinate3[1] == j && e[1] == 1) {
 							if (map[coordinate3[0]][coordinate3[1]] == 2) std::cout << "▷";
 							if (map[coordinate3[0]][coordinate3[1]] == 3) std::cout << "◁";
 							if (map[coordinate3[0]][coordinate3[1]] == 4) std::cout << "△";
@@ -509,7 +616,7 @@ void tank_c::print() {
 				std::cout << "\n";
 			}
 		}
-		else if ((coordinate[2] == 3 && coordinate[0] == coordinate2[0] && coordinate[1] - coordinate2[1] > -1 && coordinate[1] - coordinate2[1] < 6) || (coordinate[2] == 3 && coordinate[0] == coordinate3[0] && coordinate[1] - coordinate3[1] > -1 && coordinate[1] - coordinate3[1] < 6) ) {
+		else if ((coordinate[2] == 3 && coordinate[0] == coordinate2[0] && coordinate[1] - coordinate2[1] > -1 && coordinate[1] - coordinate2[1] < 6) || (coordinate[2] == 3 && coordinate[0] == coordinate3[0] && coordinate[1] - coordinate3[1] > -1 && coordinate[1] - coordinate3[1] < 6)) {
 			if (coordinate[0] == coordinate2[0] && coordinate[1] - coordinate2[1] > -1 && coordinate[1] - coordinate2[1] < 6 && coordinate2[2] != 0) e[0] = 1;
 			if (coordinate[0] == coordinate3[0] && coordinate[1] - coordinate3[1] > -1 && coordinate[1] - coordinate3[1] < 6 && coordinate3[2] != 0) e[1] = 1;
 			for (int i = 0; i < 10; i++) {
@@ -601,7 +708,7 @@ void tank_c::print() {
 				std::cout << "\n";
 			}
 		}
-		else if ( (coordinate[2] == 5 && coordinate[1] == coordinate2[1] && coordinate2[0] - coordinate[0] > -1 && coordinate2[0] - coordinate[0] < 6) || (coordinate[2] == 5 && coordinate[1] == coordinate3[1] && coordinate3[1] - coordinate[1] > -1 && coordinate3[1] - coordinate[1] < 6) ) {
+		else if ((coordinate[2] == 5 && coordinate[1] == coordinate2[1] && coordinate2[0] - coordinate[0] > -1 && coordinate2[0] - coordinate[0] < 6) || (coordinate[2] == 5 && coordinate[1] == coordinate3[1] && coordinate3[1] - coordinate[1] > -1 && coordinate3[1] - coordinate[1] < 6)) {
 			if (coordinate[1] == coordinate2[1] && coordinate2[0] - coordinate[0] > -1 && coordinate2[0] - coordinate[0] < 6 && coordinate2[2] != 0) e[0] = 1;
 			if (coordinate[1] == coordinate3[1] && coordinate3[0] - coordinate[0] > -1 && coordinate3[0] - coordinate[0] < 6 && coordinate3[2] != 0) e[1] = 1;
 			for (int i = 0; i < 10; i++) {
@@ -628,7 +735,6 @@ void tank_c::print() {
 				for (int j = 0; j < 10; j++) {
 					if (i == 0) {
 						if (coordinate[1] == j) {
-							if (map[coordinate[0]][j] == 4) std::cout << "▲";
 							if (map[coordinate[0]][j] == 5) std::cout << "▼";
 						}
 						else {
@@ -644,14 +750,14 @@ void tank_c::print() {
 		else {
 			for (int i = 0; i < 10; i++) {
 				for (int j = 0; j < 10; j++) {
-					if (coordinate[0] == i && coordinate[1] == j && coordinate[2] !=0 ) {
+					if (coordinate[0] == i && coordinate[1] == j && coordinate[2] != 0) {
 						if (map[i][j] == 2) std::cout << "▶";
 						if (map[i][j] == 3) std::cout << "◀";
 						if (map[i][j] == 4) std::cout << "▲";
 						if (map[i][j] == 5) std::cout << "▼";
 					}
 					else {
-						if (coordinate[2] == 2 ) {
+						if (coordinate[2] == 2) {
 							if (map[i][j] == 6 && i == coordinate[0] && coordinate[1] < j && coordinate[1] + 5 >= j) std::cout << "ㅡ";
 							else if (map[i][j] == 7 && i == coordinate[0] && coordinate[1] < j && coordinate[1] + 5 >= j) std::cout << "ㅣ";
 							else if (map[i][j] == 1) std::cout << "■";
@@ -665,7 +771,7 @@ void tank_c::print() {
 							else if (map[i][j] == 0) std::cout << "□";
 							else std::cout << "□";
 						}
-						else if (coordinate[2] == 4 ) {
+						else if (coordinate[2] == 4) {
 							if (map[i][j] == 6 && j == coordinate[1] && coordinate[0] > i && coordinate[0] - 5 <= i) std::cout << "ㅡ";
 							else if (map[i][j] == 7 && j == coordinate[1] && coordinate[0] > i && coordinate[0] - 5 <= i) std::cout << "ㅣ";
 							else if (map[i][j] == 1) std::cout << "■";
@@ -706,7 +812,7 @@ void tank_c::print() {
 							}
 							else if (coordinate[2] == 3) {
 								if (map[coordinate[0]][j] == 6 && coordinate[1] > j && coordinate[1] - 5 <= j)  std::cout << "ㅡ";
-								else if (map[coordinate[0]][j] == 7  && coordinate[1] > j && coordinate[1] - 5 <= j)  std::cout << "ㅣ";
+								else if (map[coordinate[0]][j] == 7 && coordinate[1] > j && coordinate[1] - 5 <= j)  std::cout << "ㅣ";
 								else if (map[coordinate[0]][j] == 1)  std::cout << "■";
 								else  std::cout << "  ";
 							}
@@ -730,19 +836,25 @@ void tank_c::print() {
 	}
 	Sleep(index[1]);
 }
+unsigned __stdcall tank_c::con(void* arg) {
+	return 1;
+}
 void tank_c::set() {
 	Cli_St();
+	unsigned long thread;
+	thread = _beginthreadex(NULL, 0, con, (void*)map, 0, &threadID);
 	while (1) {
 		con();
 		move();
-		if (y <= 0 ) {
+		if (y <= 0) {
 			return;
 		}
 	}
 }
 tank_c :: ~tank_c() {
 	system("cls");
-	if (coordinate[2] != 0) {
+	closesocket(clientSocket);
+	if (coordinate[2] !=0) {
 		std::cout << "\n   You Win  !!!!!!\n\n";
 	}
 	else std::cout << "\n   You Lose  ㅠㅠ \n\n";
