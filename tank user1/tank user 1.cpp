@@ -36,7 +36,6 @@ public:
 	int key = STOP; 
 	int y = 2, q = 0;  //클라이언트 끝내는 변수
 	tank_p(); //장애물 찍는 생성자
-	~tank_p(); // 승패 여부 출력 소멸자
 };
 tank_p::tank_p() {
 	map[1][3] = 1;
@@ -71,6 +70,7 @@ public:
 	void print(); //맵 출력
 	void set(); // 게임 시작 
 	void con(); // 서버로 좌표값을 보내고 받는 함수
+	~tank_c(); // 승패 여부 출력 소멸자
 };
 
 void tank_c::Cli_St() {
@@ -278,7 +278,7 @@ void tank_c::con() {
 			map[coordinate3[0]][coordinate3[1]] = coordinate3[2];
 		}
 	}
-	if ((map[coordinate[0]][coordinate[1]] == 6 || map[coordinate[0]][coordinate[1]] == 7 && a[1] == 0) || (a[0] == 0 && ((me[0] == 1 && (coordinate2[5] == 1 || coordinate3[5] == 1)) || (me[0] == 2 && (coordinate2[5] == 2 || coordinate3[5] == 2)) || (me[0] == 3 && (coordinate2[5] == 3 || coordinate3[5] == 3))))) {
+	if ((map[coordinate[0]][coordinate[1]] == 6 || map[coordinate[0]][coordinate[1]] == 7 && a[1] == 0)) {
 		a[1] = 1;
 		coordinate[2] = 0;
 		key = STOP;
@@ -358,30 +358,6 @@ void tank_c::move(void) {
 						if (coordinate[1] + i > 9 || map[coordinate[0]][coordinate[1] + i] == 1) {
 							break;
 						}
-						if (me[0] == 1) {
-							if (coordinate2[0] == coordinate[0] && coordinate[1] + i == coordinate2[1]) {
-								coordinate[5] = 2;
-							}
-							if (coordinate3[0] == coordinate[0] && coordinate[1] + i == coordinate3[1]) {
-								coordinate[5] = 3;
-							}
-						}
-						if (me[0] == 2) {
-							if (coordinate2[0] == coordinate[0] && coordinate[1] + i == coordinate2[1]) {
-								coordinate[5] = 1;
-							}
-							if (coordinate3[0] == coordinate[0] && coordinate[1] + i == coordinate3[1]) {
-								coordinate[5] = 3;
-							}
-						}
-						if (me[0] == 3) {
-							if (coordinate2[0] == coordinate[0] && coordinate[1] + i == coordinate2[1]) {
-								coordinate[5] = 1;
-							}
-							if (coordinate3[0] == coordinate[0] && coordinate[1] + i == coordinate3[1]) {
-								coordinate[5] = 2;
-							}
-						}
 						map[coordinate[0]][coordinate[1] + i] = 6;
 
 					}
@@ -395,30 +371,6 @@ void tank_c::move(void) {
 						if (coordinate[1] - i < 0 || map[coordinate[0]][coordinate[1] - i] == 1) {
 							break;
 						}
-						if (me[0] == 1) {
-							if (coordinate2[0] == coordinate[0] && coordinate[1] - i == coordinate2[1]) {
-								coordinate[5] = 2;
-							}
-							if (coordinate3[0] == coordinate[0] && coordinate[1] - i == coordinate3[1]) {
-								coordinate[5] = 3;
-							}
-						}
-						if (me[0] == 2) {
-							if (coordinate2[0] == coordinate[0] && coordinate[1] - i == coordinate2[1]) {
-								coordinate[5] = 1;
-							}
-							if (coordinate3[0] == coordinate[0] && coordinate[1] - i == coordinate3[1]) {
-								coordinate[5] = 3;
-							}
-						}
-						if (me[0] == 3) {
-							if (coordinate2[0] == coordinate[0] && coordinate[1] - i == coordinate2[1]) {
-								coordinate[5] = 1;
-							}
-							if (coordinate3[0] == coordinate[0] && coordinate[1] - i == coordinate3[1]) {
-								coordinate[5] = 2;
-							}
-						}
 						map[coordinate[0]][coordinate[1] - i] = 6;
 					}
 				}
@@ -431,30 +383,6 @@ void tank_c::move(void) {
 						if (coordinate[0] - i < 0 || map[coordinate[0] - i][coordinate[1]] == 1) {
 							break;
 						}
-						if (me[0] == 1) {
-							if (coordinate2[1] == coordinate[1] && coordinate[0] - i == coordinate2[0]) {
-								coordinate[5] = 2;
-							}
-							if (coordinate3[1] == coordinate[1] && coordinate[0] - i == coordinate3[0]) {
-								coordinate[5] = 3;
-							}
-						}
-						if (me[0] == 2) {
-							if (coordinate2[1] == coordinate[1] && coordinate[0] - i == coordinate2[0]) {
-								coordinate[5] = 1;
-							}
-							if (coordinate3[1] == coordinate[1] && coordinate[0] - i == coordinate3[0]) {
-								coordinate[5] = 3;
-							}
-						}
-						if (me[0] == 3) {
-							if (coordinate2[1] == coordinate[1] && coordinate[0] - i == coordinate2[0]) {
-								coordinate[5] = 1;
-							}
-							if (coordinate3[1] == coordinate[1] && coordinate[0] - i == coordinate3[0]) {
-								coordinate[5] = 2;
-							}
-						}
 						map[coordinate[0] - i][coordinate[1]] = 7;
 					}
 				}
@@ -466,30 +394,6 @@ void tank_c::move(void) {
 					for (int i = 1; i < 4; i++) {
 						if (coordinate[0] + i > 9 || map[coordinate[0] + i][coordinate[1]] == 1) {
 							break;
-						}
-						if (me[0] == 1) {
-							if (coordinate2[1] == coordinate[1] && coordinate[0] + i == coordinate2[0]) {
-								coordinate[5] = 2;
-							}
-							if (coordinate3[1] == coordinate[1] && coordinate[0] + i == coordinate3[0]) {
-								coordinate[5] = 3;
-							}
-						}
-						if (me[0] == 2) {
-							if (coordinate2[1] == coordinate[1] && coordinate[0] + i == coordinate2[0]) {
-								coordinate[5] = 1;
-							}
-							if (coordinate3[1] == coordinate[1] && coordinate[0] + i == coordinate3[0]) {
-								coordinate[5] = 3;
-							}
-						}
-						if (me[0] == 3) {
-							if (coordinate2[1] == coordinate[1] && coordinate[0] + i == coordinate2[0]) {
-								coordinate[5] = 1;
-							}
-							if (coordinate3[1] == coordinate[1] && coordinate[0] + i == coordinate3[0]) {
-								coordinate[5] = 2;
-							}
 						}
 						map[coordinate[0] + i][coordinate[1]] = 7;
 					}
@@ -691,7 +595,6 @@ void tank_c::print() {
 					if (i == 0) {
 						if (coordinate[1] == j) {
 							if (map[coordinate[0]][j] == 4) std::cout << "▲";
-							if (map[coordinate[0]][j] == 5) std::cout << "▼";
 						}
 						else {
 							if (map[coordinate[0]][j] == 0) std::cout << "  ";
@@ -789,33 +692,51 @@ void tank_c::print() {
 				std::cout << "\n";
 			}
 			std::cout << "\n--------------------\n\n";
-			for (int i = 0; i < 2; i++) {
-				for (int j = 0; j < 10; j++) {
-					if (i == 0) {
-						if (coordinate[1] == j) {
-							if (map[coordinate[0]][j] == 2) std::cout << "▶";
-							if (map[coordinate[0]][j] == 3) std::cout << "◀";
-							if (map[coordinate[0]][j] == 4) std::cout << "▲";
-							if (map[coordinate[0]][j] == 5) std::cout << "▼";
-						}
-						else {
-							if (coordinate[2] == 2) {
-								if (map[coordinate[0]][j] == 6 && coordinate[1] < j && coordinate[1] + 5 >= j) std::cout << "ㅡ";
-								else if (map[coordinate[0]][j] == 7 && coordinate[1] < j && coordinate[1] + 5 >= j) std::cout << "ㅣ";
-								else if (map[coordinate[0]][j] == 1) std::cout << "■";
+			if (coordinate[2] == 4 || coordinate[2] == 5) {
+				for (int i = 0; i < 2; i++) {
+					for (int j = 0; j < 10; j++) {
+						if (i == 0) {
+							if (coordinate[1] == j) {
+								if (map[coordinate[0]][j] == 5) std::cout << "▼";
+								if (map[coordinate[0]][j] == 4) std::cout << "▲";
+							}
+							else {
+								if (map[coordinate[0]][j] == 1) std::cout << "■";
 								else std::cout << "  ";
 							}
-							else if (coordinate[2] == 3) {
-								if (map[coordinate[0]][j] == 6 && coordinate[1] > j && coordinate[1] - 5 <= j)  std::cout << "ㅡ";
-								else if (map[coordinate[0]][j] == 7 && coordinate[1] > j && coordinate[1] - 5 <= j)  std::cout << "ㅣ";
-								else if (map[coordinate[0]][j] == 1)  std::cout << "■";
-								else  std::cout << "  ";
+						}
+						if (i == 1) std::cout << "□";
+					}
+					std::cout << "\n";
+				}
+			}
+			else {
+				for (int i = 0; i < 2; i++) {
+					for (int j = 0; j < 10; j++) {
+						if (i == 0) {
+							if (coordinate[1] == j) {
+								if (map[coordinate[0]][j] == 2) std::cout << "▶";
+								if (map[coordinate[0]][j] == 3) std::cout << "◀";
+							}
+							else {
+								if (coordinate[2] == 2) {
+									if (map[coordinate[0]][j] == 6 && coordinate[1] < j && coordinate[1] + 5 >= j) std::cout << "ㅡ";
+									else if (map[coordinate[0]][j] == 7 && coordinate[1] < j && coordinate[1] + 5 >= j) std::cout << "ㅣ";
+									else if (map[coordinate[0]][j] == 1) std::cout << "■";
+									else std::cout << "  ";
+								}
+								else if (coordinate[2] == 3) {
+									if (map[coordinate[0]][j] == 6 && coordinate[1] > j && coordinate[1] - 5 <= j)  std::cout << "ㅡ";
+									else if (map[coordinate[0]][j] == 7 && coordinate[1] > j && coordinate[1] - 5 <= j)  std::cout << "ㅣ";
+									else if (map[coordinate[0]][j] == 1)  std::cout << "■";
+									else  std::cout << "  ";
+								}
 							}
 						}
+						if (i == 1) std::cout << "□";
 					}
-					if (i == 1) std::cout << "□";
+					std::cout << "\n";
 				}
-				std::cout << "\n";
 			}
 		}
 	}
@@ -841,7 +762,7 @@ void tank_c::set() {
 		}
 	}
 }
-tank_p :: ~tank_p() {
+tank_c :: ~tank_c() {
 	system("cls");
 	closesocket(clientSocket);
 	if (coordinate[2] !=0) {
